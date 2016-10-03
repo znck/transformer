@@ -12,6 +12,8 @@ abstract class Transformer extends TransformerAbstract
 
     protected static $invertedModels;
 
+    protected $indexing = false;
+
     public static function register(array $map) {
         self::$transformers += $map;
     }
@@ -53,8 +55,30 @@ abstract class Transformer extends TransformerAbstract
     }
 
     public function transform($model) {
+        $method = $this->isIndexing() ? 'index' : 'show';
+
         return $this->transformId($model)
                + $this->transformTimestamps($model)
-               + $this->handle($model);
+               + $this->$method($model);
+    }
+
+    /**
+     * Set indexing!
+     *
+     * @param boolean $indexing
+     *
+     * @return Transformer
+     */
+    public function setIndexing(bool $indexing): Transformer {
+        $this->indexing = $indexing;
+
+        return $this;
+    }
+
+    /**
+     * @return boolean
+     */
+    public function isIndexing(): bool {
+        return $this->indexing;
     }
 }

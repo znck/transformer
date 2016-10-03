@@ -18,25 +18,27 @@ class Factory
         $manager = new Manager();
 
         if ($data instanceof Collection) {
-            $resource = new Items($data->all(), static::transformer($data));
+            $resource = new Items($data->all(), self::setIndexing(self::transformer($data)));
         } elseif ($data instanceof Paginator) {
-            $resource = new Items($data->items(), static::transformer($data));
+            $resource = new Items($data->items(), self::setIndexing(self::transformer($data)));
             if ($data instanceof LengthAwarePaginator) {
                 $resource->setPaginator(new IlluminatePaginatorAdapter($data));
             } else {
                 $resource->setPaginator(
                     new IlluminatePaginatorAdapter(
-                        new PaginatorWrapper($data->items(), 0, $data->perPage(), $data->currentPage())
+                        new PaginatorWrapper(
+                            $data->items(), 0,
+                            $data->perPage(),
+                            $data->currentPage()
+                        )
                     )
                 );
             }
         } elseif ($data instanceof Model) {
-            $resource = new Item($data, static::transformer($data));
+            $resource = new Item($data, self::transformer($data));
         }
 
         if (!isset($resource)) {
-            // Cannot transform this one!
-
             return $data;
         }
 
@@ -71,6 +73,19 @@ class Factory
         return app($class);
     }
 
+    protected static function setIndexing($transformer) {
+        if ($transformer instanceof Transformer) {
+            $transformer->isIndexing();
+        }
+
+        return $transformer;
+    }
+
+    /**
+     * @param $item
+     *
+     * @return Transformer|\Closure
+     */
     static public function transformer($item) {
         if ($item instanceof Model) {
             return static::resolveTransformer(get_class($item));

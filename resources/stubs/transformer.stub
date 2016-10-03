@@ -6,9 +6,12 @@ use DummyBaseTransformer;
 
 class DummyClass extends Transformer
 {
-
     HelperComments
-    public function handle(DummyModelClass $model) {
+    public function show(DummyModelClass $model) {
+        return $model->toArray();
+    }
+    HelperComments
+    public function index(DummyModelClass $model) {
         return $model->toArray();
     }
 }
