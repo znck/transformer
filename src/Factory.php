@@ -26,7 +26,8 @@ class Factory
                 $resource->setPaginator(new IlluminatePaginatorAdapter($data));
             } else {
                 $wrapped = new PaginatorWrapper(
-                    $data->items(), 0,
+                    $data->items(),
+                    $data->perPage() * ($data->currentPage() - 1) + count($data->items()) + 1,
                     $data->perPage(),
                     $data->currentPage(),
                     [
