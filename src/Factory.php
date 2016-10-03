@@ -6,6 +6,7 @@ use Illuminate\Contracts\Support\Arrayable;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Pagination\LengthAwarePaginator as PaginatorWrapper;
+use Illuminate\Pagination\Paginator as LaravelPaginator;
 use League\Fractal\Manager;
 use League\Fractal\Pagination\IlluminatePaginatorAdapter;
 use League\Fractal\Resource\Collection as Items;
@@ -24,15 +25,16 @@ class Factory
             if ($data instanceof LengthAwarePaginator) {
                 $resource->setPaginator(new IlluminatePaginatorAdapter($data));
             } else {
-                $resource->setPaginator(
-                    new IlluminatePaginatorAdapter(
-                        new PaginatorWrapper(
-                            $data->items(), 0,
-                            $data->perPage(),
-                            $data->currentPage()
-                        )
-                    )
+                $wrapped = new PaginatorWrapper(
+                    $data->items(), 0,
+                    $data->perPage(),
+                    $data->currentPage(),
+                    [
+                        'path' => LaravelPaginator::resolveCurrentPath(),
+                        'pageName' => $data->pageName ?? 'page',
+                    ]
                 );
+                $resource->setPaginator(new IlluminatePaginatorAdapter($wrapped));
             }
         } elseif ($data instanceof Model) {
             $resource = new Item($data, self::transformer($data));
