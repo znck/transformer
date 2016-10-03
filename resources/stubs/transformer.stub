@@ -1,0 +1,14 @@
+<?php namespace DummyNamespace;
+
+DummyModelNamespace
+use DummyBaseTransformer;
+
+
+class DummyClass extends Transformer
+{
+
+    HelperComments
+    public function handle(DummyModelClass $model) {
+        return $model->toArray();
+    }
+}
