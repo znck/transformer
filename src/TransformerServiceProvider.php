@@ -1,4 +1,4 @@
-<?php namespace Znck\Repositories;
+<?php namespace Znck\Transformers;
 
 use Illuminate\Support\ServiceProvider;
 use Znck\Transformers\Console\TransformerMakeCommand;
