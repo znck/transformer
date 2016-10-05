@@ -25,9 +25,11 @@ class Factory
             if ($data instanceof LengthAwarePaginator) {
                 $resource->setPaginator(new IlluminatePaginatorAdapter($data));
             } else {
+                $before = $data->perPage() * ($data->currentPage() - 1);
+                $after = $data->perPage() === count($data->items()) ? 1 : 0;
                 $wrapped = new PaginatorWrapper(
                     $data->items(),
-                    $data->perPage() * ($data->currentPage() - 1) + count($data->items()) + 1,
+                    $before + count($data->items()) + $after,
                     $data->perPage(),
                     $data->currentPage(),
                     [
