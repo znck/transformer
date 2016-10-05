@@ -69,7 +69,7 @@ abstract class Transformer extends TransformerAbstract
      *
      * @return Transformer
      */
-    public function setIndexing(bool $indexing): Transformer {
+    public function setIndexing(bool $indexing = true): Transformer {
         $this->indexing = $indexing;
 
         return $this;

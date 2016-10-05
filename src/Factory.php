@@ -80,7 +80,7 @@ class Factory
 
     protected static function setIndexing($transformer) {
         if ($transformer instanceof Transformer) {
-            $transformer->isIndexing();
+            $transformer->setIndexing();
         }
 
         return $transformer;
