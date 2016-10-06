@@ -11,6 +11,7 @@ use League\Fractal\Manager;
 use League\Fractal\Pagination\IlluminatePaginatorAdapter;
 use League\Fractal\Resource\Collection as Items;
 use League\Fractal\Resource\Item;
+use League\Fractal\Serializer\ArraySerializer;
 use Znck\Transformers\Transformer;
 
 
@@ -60,8 +61,9 @@ trait TransformerManager
      * @return Manager
      */
     public static function getManager() {
-        if (!self::$manager) {
+        if (is_null(self::$manager)) {
             self::$manager = new Manager();
+            self::$manager->setSerializer(new ArraySerializer());
         }
 
         return self::$manager;
