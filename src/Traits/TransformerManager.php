@@ -23,9 +23,9 @@ trait TransformerManager
         $manager = self::getManager();
 
         if ($data instanceof Collection) {
-            $resource = new Items($data->all(), self::setIndexing(self::transformer($data)));
+            $resource = new Items($data->all(), self::wrap(self::transformer($data)));
         } elseif ($data instanceof Paginator) {
-            $resource = new Items($data->items(), self::setIndexing(self::transformer($data)));
+            $resource = new Items($data->items(), self::wrap(self::transformer($data)));
             if ($data instanceof LengthAwarePaginator) {
                 $resource->setPaginator(new IlluminatePaginatorAdapter($data));
             } else {
@@ -121,7 +121,7 @@ trait TransformerManager
         return app($class);
     }
 
-    protected static function setIndexing($transformer) {
+    protected static function wrap($transformer) {
         if ($transformer instanceof Transformer) {
             $transformer->setIndexing();
         }

@@ -1,12 +1,10 @@
 <?php namespace Znck\Transformers\Traits;
 
-use Znck\Transformers\Traits\TransformerManager;
+use Znck\Transformers\Transformer;
 
 trait TransformResponse
 {
     public function callAction($method, $parameters) {
-        $data = parent::callAction($method, $parameters);
-
-        return TransformerManager::response($data);
+        return Transformer::response(parent::callAction($method, $parameters));
     }
 }
