@@ -1,6 +1,6 @@
 <?php namespace {
 
-    use Znck\Transformers\Factory;
+    use Znck\Transformers\Traits\TransformerManager;
     use Znck\Transformers\Transformer;
 
     if (!function_exists('transformer')) {
@@ -12,7 +12,7 @@
          * @return Transformer
          */
         function transformer($item) {
-            return Factory::transformer($item);
+            return Transformer::transformer($item);
         }
     }
 }

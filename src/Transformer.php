@@ -3,9 +3,12 @@
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use League\Fractal\TransformerAbstract;
+use Znck\Transformers\Traits\TransformerManager;
 
 abstract class Transformer extends TransformerAbstract
 {
+    use TransformerManager;
+
     public static $transformers = [];
 
     protected static $relations;

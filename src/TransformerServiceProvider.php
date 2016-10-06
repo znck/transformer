@@ -1,6 +1,7 @@
 <?php namespace Znck\Transformers;
 
 use Illuminate\Support\ServiceProvider;
+use League\Fractal\Serializer\ArraySerializer;
 use Znck\Transformers\Console\TransformerMakeCommand;
 
 class TransformerServiceProvider extends ServiceProvider
@@ -11,6 +12,10 @@ class TransformerServiceProvider extends ServiceProvider
      * @var bool
      */
     protected $defer = true;
+
+    public function boot() {
+        Transformer::getManager()->setSerializer(new ArraySerializer());
+    }
 
     /**
      * Register the service provider.

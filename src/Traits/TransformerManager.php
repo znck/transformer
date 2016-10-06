@@ -1,4 +1,4 @@
-<?php namespace Znck\Transformers;
+<?php namespace Znck\Transformers\Traits;
 
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Contracts\Pagination\Paginator;
@@ -11,12 +11,15 @@ use League\Fractal\Manager;
 use League\Fractal\Pagination\IlluminatePaginatorAdapter;
 use League\Fractal\Resource\Collection as Items;
 use League\Fractal\Resource\Item;
+use Znck\Transformers\Transformer;
 
 
-class Factory
+trait TransformerManager
 {
-    static public function response($data) {
-        $manager = new Manager();
+    protected static $manager;
+
+    public static function response($data) {
+        $manager = self::getManager();
 
         if ($data instanceof Collection) {
             $resource = new Items($data->all(), self::setIndexing(self::transformer($data)));
@@ -53,6 +56,44 @@ class Factory
             ->createData($resource)->toArray();
     }
 
+    /**
+     * @return Manager
+     */
+    public static function getManager() {
+        if (!self::$manager) {
+            self::$manager = new Manager();
+        }
+
+        return self::$manager;
+    }
+
+    /**
+     * @param $item
+     *
+     * @return Transformer|\Closure
+     */
+    public static function transformer($item) {
+        if ($item instanceof Model) {
+            return self::resolveTransformer(get_class($item));
+        }
+
+        if ($item instanceof Collection) {
+            return self::transformer($item->first());
+        }
+
+        if ($item instanceof Paginator) {
+            return self::transformer(array_first($item->items()));
+        }
+
+        return function ($model) {
+            if ($model instanceof Arrayable) {
+                return $model->toArray();
+            }
+
+            return $model;
+        };
+    }
+
     static public function resolveTransformer($model) {
         if (!is_string($model)) {
             $model = get_class($model);
@@ -84,32 +125,5 @@ class Factory
         }
 
         return $transformer;
-    }
-
-    /**
-     * @param $item
-     *
-     * @return Transformer|\Closure
-     */
-    static public function transformer($item) {
-        if ($item instanceof Model) {
-            return static::resolveTransformer(get_class($item));
-        }
-
-        if ($item instanceof Collection) {
-            return static::transformer($item->first());
-        }
-
-        if ($item instanceof Paginator) {
-            return static::transformer(array_first($item->items()));
-        }
-
-        return function ($model) {
-            if ($model instanceof Arrayable) {
-                return $model->toArray();
-            }
-
-            return $model;
-        };
     }
 }
