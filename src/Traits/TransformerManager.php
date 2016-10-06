@@ -5,6 +5,7 @@ use Illuminate\Contracts\Pagination\Paginator;
 use Illuminate\Contracts\Support\Arrayable;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator as PaginatorWrapper;
 use Illuminate\Pagination\Paginator as LaravelPaginator;
 use League\Fractal\Manager;
@@ -52,8 +53,8 @@ trait TransformerManager
         }
 
         return $manager
-            ->parseIncludes('with')
-            ->parseExcludes('without')
+            ->parseIncludes(app(Request::class)->query('with', ''))
+            ->parseExcludes(app(Request::class)->query('without', ''))
             ->createData($resource)->toArray();
     }
 
