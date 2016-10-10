@@ -28,9 +28,9 @@ abstract class Transformer extends TransformerAbstract
         }
 
         if (class_exists($model)) {
-            return static::$relations[$model] ?? $model;
-        } else {
             return static::$invertedModels[$model] ?? $model;
+        } else {
+            return static::$relations[$model] ?? $model;
         }
     }
 
