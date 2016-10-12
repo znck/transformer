@@ -86,4 +86,12 @@ abstract class Transformer extends TransformerAbstract
     public function isIndexing(): bool {
         return $this->indexing;
     }
+
+    public function item($data, $transformer = null, $resourceKey = null) {
+        return parent::item($data, $transformer ?? self::transformer($data), $resourceKey);
+    }
+
+    public function collection($data, $transformer = null, $resourceKey = null) {
+        return parent::collection($data, $transformer ?? self::transformer($data->first()), $resourceKey);
+    }
 }
