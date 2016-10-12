@@ -92,6 +92,12 @@ abstract class Transformer extends TransformerAbstract
     }
 
     public function collection($data, $transformer = null, $resourceKey = null) {
-        return parent::collection($data, $transformer ?? self::transformer($data->first()), $resourceKey);
+        $transformer = $transformer ?? self::transformer($data->first());
+
+        if ($transformer instanceof Transformer) {
+            $transformer->setIndexing();
+        }
+
+        return parent::collection($data, $transformer, $resourceKey);
     }
 }
