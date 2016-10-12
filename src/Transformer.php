@@ -17,6 +17,8 @@ abstract class Transformer extends TransformerAbstract
 
     protected $indexing = false;
 
+    protected $timestamps = true;
+
     public static function register(array $map) {
         self::$transformers += $map;
     }
@@ -42,7 +44,7 @@ abstract class Transformer extends TransformerAbstract
     }
 
     public function transformTimestamps(Model $model) {
-        if ($model->usesTimestamps()) {
+        if ($this->timestamps and $model->usesTimestamps()) {
             /** @var \Carbon\Carbon $created */
             $created = $model->created_at;
             /** @var \Carbon\Carbon $updated */
