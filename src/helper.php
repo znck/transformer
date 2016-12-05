@@ -23,6 +23,6 @@ if (!function_exists('transform')) {
      * @return array
      */
     function transform($item) {
-        return transformer($item)->transform($item);
+        return Transformer::response($item);
     }
 }
