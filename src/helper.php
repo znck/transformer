@@ -1,6 +1,5 @@
 <?php
 
-use Znck\Transformers\Traits\TransformerManager;
 use Znck\Transformers\Transformer;
 
 if (!function_exists('transformer')) {
@@ -22,7 +21,7 @@ if (!function_exists('transform')) {
      *
      * @return array
      */
-    function transform($item) {
-        return Transformer::response($item);
+    function transform($item, $includes = null, $excludes = null) {
+        return Transformer::response($item, $includes, $excludes);
     }
 }

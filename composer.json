@@ -33,7 +33,7 @@
     "illuminate/support": "^5.3",
     "illuminate/database": "^5.3",
     "illuminate/console": "^5.3",
-    "league/fractal": "^0.14.0"
+    "league/fractal": "^0.14"
   },
   "require-dev": {
     "phpunit/php-code-coverage": "^4.0",

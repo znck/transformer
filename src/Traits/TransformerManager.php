@@ -20,7 +20,7 @@ trait TransformerManager
 {
     protected static $manager;
 
-    public static function response($data) {
+    public static function response($data, $includes = null, $excludes = null) {
         $manager = self::getManager();
 
         if ($data instanceof Collection) {
@@ -53,8 +53,8 @@ trait TransformerManager
         }
 
         return $manager
-            ->parseIncludes(app(Request::class)->query('with', ''))
-            ->parseExcludes(app(Request::class)->query('without', ''))
+            ->parseIncludes($includes ?? app(Request::class)->query('with', ''))
+            ->parseExcludes($excludes ?? app(Request::class)->query('without', ''))
             ->createData($resource)->toArray();
     }
 
