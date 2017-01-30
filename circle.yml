@@ -6,7 +6,9 @@ dependencies:
   override:
     - mkdir -p build/logs
     - composer install --dev --no-interaction
-#    - sed -i 's/^;//' ~/.phpenv/versions/$(phpenv global)/etc/conf.d/xdebug.ini
+  cache_directories:
+    - "~/.composer/cache"
+
 
 test:
   override:
@@ -16,3 +18,9 @@ test:
 general:
   artifacts:
     - "build"
+
+# deployment:
+#   publish:
+#     branch: master
+#     commands:
+#       - php sereno deploy

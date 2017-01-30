@@ -88,10 +88,14 @@ abstract class Transformer extends TransformerAbstract
     }
 
     public function item($data, $transformer = null, $resourceKey = null) {
+        if (is_null($data)) return $this->null();
+
         return parent::item($data, $transformer ?? self::transformer($data), $resourceKey);
     }
 
     public function collection($data, $transformer = null, $resourceKey = null) {
+        if (is_null($data)) return $this->null();
+
         $transformer = $transformer ?? self::transformer($data->first());
 
         if ($transformer instanceof Transformer) {
