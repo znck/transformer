@@ -3,38 +3,17 @@
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use League\Fractal\TransformerAbstract;
+use Znck\Transformers\Traits\IntelligentHelpers;
 use Znck\Transformers\Traits\TransformerManager;
+use Znck\Transformers\Traits\TransformerResolver;
 
 abstract class Transformer extends TransformerAbstract
 {
-    use TransformerManager;
-
-    public static $transformers = [];
-
-    protected static $relations;
-
-    protected static $invertedModels;
+    use TransformerManager, IntelligentHelpers, TransformerResolver;
 
     protected $indexing = false;
 
     protected $timestamps = true;
-
-    public static function register(array $map) {
-        self::$transformers += $map;
-    }
-
-    public static function resolveModelType(string $model) {
-        if (!self::$relations) {
-            self::$relations = Relation::morphMap();
-            self::$invertedModels = array_flip(self::$relations);
-        }
-
-        if (class_exists($model)) {
-            return static::$invertedModels[$model] ?? $model;
-        } else {
-            return static::$relations[$model] ?? $model;
-        }
-    }
 
     public function transformId(Model $model) {
         return [
@@ -45,9 +24,7 @@ abstract class Transformer extends TransformerAbstract
 
     public function transformTimestamps(Model $model) {
         if ($this->timestamps and $model->usesTimestamps()) {
-            /** @var \Carbon\Carbon $created */
             $created = $model->created_at;
-            /** @var \Carbon\Carbon $updated */
             $updated = $model->updated_at;
 
             return [
@@ -85,23 +62,5 @@ abstract class Transformer extends TransformerAbstract
      */
     public function isIndexing(): bool {
         return $this->indexing;
-    }
-
-    public function item($data, $transformer = null, $resourceKey = null) {
-        if (is_null($data)) return $this->null();
-
-        return parent::item($data, $transformer ?? self::transformer($data), $resourceKey);
-    }
-
-    public function collection($data, $transformer = null, $resourceKey = null) {
-        if (is_null($data)) return $this->null();
-
-        $transformer = $transformer ?? self::transformer($data->first());
-
-        if ($transformer instanceof Transformer) {
-            $transformer->setIndexing();
-        }
-
-        return parent::collection($data, $transformer, $resourceKey);
     }
 }

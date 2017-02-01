@@ -1,4 +1,6 @@
-<?php namespace Znck\Transformers\Serializers;
+<?php
+
+namespace Znck\Transformers\Serializers;
 
 use League\Fractal\Serializer\ArraySerializer;
 
@@ -8,11 +10,15 @@ class EmbedSerializer extends ArraySerializer
         return [];
     }
 
-    public function meta(array $meta) {
-        if (empty($meta)) {
-            return [];
-        }
+    public function collection($resourceKey, array $data) {
+        return [$resourceKey ?: 'items' => $data];
+    }
 
-        return ['_meta' => $meta];
+    public function item($resourceKey, array $data) {
+        return [$resourceKey ?: 'item' => $data];
+    }
+
+    public function meta(array $meta) {
+        return ['meta' => $meta];
     }
 }

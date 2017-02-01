@@ -13,6 +13,7 @@ use League\Fractal\Pagination\IlluminatePaginatorAdapter;
 use League\Fractal\Resource\Collection as Items;
 use League\Fractal\Resource\Item;
 use League\Fractal\Serializer\ArraySerializer;
+use Znck\Transformers\ArrayableTransformer;
 use Znck\Transformers\Transformer;
 
 
@@ -24,31 +25,14 @@ trait TransformerManager
         $manager = self::getManager();
 
         if ($data instanceof Collection) {
-            $resource = new Items($data->all(), self::wrap(self::transformer($data)));
+            $resource = self::transformer($data)->collection($data);
         } elseif ($data instanceof Paginator) {
-            $resource = new Items($data->items(), self::wrap(self::transformer($data)));
-            if ($data instanceof LengthAwarePaginator) {
-                $resource->setPaginator(new IlluminatePaginatorAdapter($data));
-            } else {
-                $before = $data->perPage() * ($data->currentPage() - 1);
-                $after = $data->perPage() === count($data->items()) ? 1 : 0;
-                $wrapped = new PaginatorWrapper(
-                    $data->items(),
-                    $before + count($data->items()) + $after,
-                    $data->perPage(),
-                    $data->currentPage(),
-                    [
-                        'path' => LaravelPaginator::resolveCurrentPath(),
-                        'pageName' => $data->pageName ?? 'page',
-                    ]
-                );
-                $resource->setPaginator(new IlluminatePaginatorAdapter($wrapped));
-            }
+            $resource = self::paginatedResponse($data);
         } elseif ($data instanceof Model) {
-            $resource = new Item($data, self::transformer($data));
+            $resource = self::transformer($data)->item($data);
         }
 
-        if (!isset($resource)) {
+        if (! isset($resource)) {
             return $data;
         }
 
@@ -73,7 +57,7 @@ trait TransformerManager
     /**
      * @param $item
      *
-     * @return Transformer|\Closure
+     * @return Transformer
      */
     public static function transformer($item) {
         if ($item instanceof Model) {
@@ -88,45 +72,46 @@ trait TransformerManager
             return self::transformer(array_first($item->items()));
         }
 
-        return function ($model) {
-            if ($model instanceof Arrayable) {
-                return $model->toArray();
-            }
-
-            return $model;
-        };
+        return app(ArrayableTransformer::class);
     }
 
-    static public function resolveTransformer($model) {
-        if (!is_string($model)) {
-            $model = get_class($model);
-        }
+    /**
+     * Handle paginated response.
+     *
+     * @param Paginator $data
+     *
+     * @return mixed
+     */
+    protected static function paginatedResponse(Paginator $data) {
+        $resource = self::transformer($data)->collection($data->items());
 
-        if (array_key_exists($model, Transformer::$transformers)) {
-            return app(Transformer::$transformers[$model]);
-        }
+        $resource->setPaginator(
+            $data instanceof LengthAwarePaginator
+                ? new IlluminatePaginatorAdapter($data)
+                : new IlluminatePaginatorAdapter(self::wrapPaginator($data))
+        );
 
-        $name = str_replace(app()->getNamespace(), '', $model);
-
-        $dirs = ['Models', 'Eloquent'];
-        if (str_contains($name, $dirs)) {
-            foreach ($dirs as $dir) {
-                $name = str_replace($dir, 'Transformers', $name);
-            }
-        } else {
-            $name = 'Transformers\\'.$name;
-        }
-
-        $class = app()->getNamespace().$name.'Transformer';
-
-        return app($class);
+        return $resource;
     }
 
-    protected static function wrap($transformer) {
-        if ($transformer instanceof Transformer) {
-            $transformer->setIndexing();
-        }
+    /**
+     * @param \Illuminate\Contracts\Pagination\Paginator $data
+     *
+     * @return \Illuminate\Pagination\LengthAwarePaginator
+     */
+    protected static function wrapPaginator(Paginator $data):\Illuminate\Pagination\LengthAwarePaginator {
+        $before = $data->perPage() * ($data->currentPage() - 1);
+        $after = $data->perPage() === count($data->items()) ? 1 : 0;
 
-        return $transformer;
+        return new PaginatorWrapper(
+            $data->items(),
+            $before + count($data->items()) + $after,
+            $data->perPage(),
+            $data->currentPage(),
+            [
+                'path' => LaravelPaginator::resolveCurrentPath(),
+                'pageName' => $data->pageName ?? 'page',
+            ]
+        );
     }
 }
