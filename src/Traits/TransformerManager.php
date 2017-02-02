@@ -21,15 +21,15 @@ trait TransformerManager
 {
     protected static $manager;
 
-    public static function response($data, $includes = null, $excludes = null) {
+    public static function response($data, $includes = null, $excludes = null, $guess = false) {
         $manager = self::getManager();
 
         if ($data instanceof Collection) {
-            $resource = self::transformer($data)->collection($data, null, self::guessResourceKey($data));
+            $resource = self::transformer($data)->collection($data, null, $guess ? self::guessResourceKey($data) : null);
         } elseif ($data instanceof Paginator) {
-            $resource = self::paginatedResponse($data);
+            $resource = self::paginatedResponse($data, , $guess ? self::guessResourceKey($data) : null);
         } elseif ($data instanceof Model) {
-            $resource = self::transformer($data)->item($data, null, self::guessResourceKey($data));
+            $resource = self::transformer($data)->item($data, null, $guess ? self::guessResourceKey($data) : null);
         }
 
         if (! isset($resource)) {
@@ -80,10 +80,12 @@ trait TransformerManager
      *
      * @param Paginator $data
      *
+     * @param string|null $resourceKey
+     *
      * @return mixed
      */
-    protected static function paginatedResponse(Paginator $data) {
-        $resource = self::transformer($data)->collection($data->items(), null, self::guessResourceKey($data));
+    protected static function paginatedResponse(Paginator $data, $resourceKey) {
+        $resource = self::transformer($data)->collection($data->items(), null, $resourceKey);
 
         $resource->setPaginator(
             $data instanceof LengthAwarePaginator
