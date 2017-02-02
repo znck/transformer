@@ -11,11 +11,11 @@ class EmbedSerializer extends ArraySerializer
     }
 
     public function collection($resourceKey, array $data) {
-        return [$resourceKey ?: 'items' => $data];
+        return $resourceKey ? [$resourceKey => $data] : $data;
     }
 
     public function item($resourceKey, array $data) {
-        return [$resourceKey ?: 'item' => $data];
+        return $resourceKey ? [$resourceKey => $data] : $data;
     }
 
     public function meta(array $meta) {

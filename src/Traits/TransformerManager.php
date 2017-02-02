@@ -25,11 +25,11 @@ trait TransformerManager
         $manager = self::getManager();
 
         if ($data instanceof Collection) {
-            $resource = self::transformer($data)->collection($data);
+            $resource = self::transformer($data)->collection($data, null, self::guessResourceKey($data));
         } elseif ($data instanceof Paginator) {
             $resource = self::paginatedResponse($data);
         } elseif ($data instanceof Model) {
-            $resource = self::transformer($data)->item($data);
+            $resource = self::transformer($data)->item($data, null, self::guessResourceKey($data));
         }
 
         if (! isset($resource)) {
@@ -83,7 +83,7 @@ trait TransformerManager
      * @return mixed
      */
     protected static function paginatedResponse(Paginator $data) {
-        $resource = self::transformer($data)->collection($data->items());
+        $resource = self::transformer($data)->collection($data->items(), null, self::guessResourceKey($data));
 
         $resource->setPaginator(
             $data instanceof LengthAwarePaginator
@@ -113,5 +113,26 @@ trait TransformerManager
                 'pageName' => $data->pageName ?? 'page',
             ]
         );
+    }
+
+    /**
+     * @param $data
+     *
+     * @return string
+     */
+    protected static function guessResourceKey($data): string {
+        if ($data instanceof Model) {
+            return strtolower(class_basename($data));
+        }
+
+        if ($data instanceof Collection) {
+            return str_plural(self::guessResourceKey($data->first()));
+        }
+
+        if ($data instanceof Paginator) {
+            return str_plural(self::guessResourceKey(array_first($data->items())));
+        }
+
+        return 'item';
     }
 }

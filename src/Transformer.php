@@ -3,13 +3,13 @@
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use League\Fractal\TransformerAbstract;
-use Znck\Transformers\Traits\IntelligentHelpers;
+use Znck\Transformers\Traits\ResourceHelpers;
 use Znck\Transformers\Traits\TransformerManager;
 use Znck\Transformers\Traits\TransformerResolver;
 
 abstract class Transformer extends TransformerAbstract
 {
-    use TransformerManager, IntelligentHelpers, TransformerResolver;
+    use TransformerManager, ResourceHelpers, TransformerResolver;
 
     protected $indexing = false;
 
