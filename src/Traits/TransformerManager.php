@@ -2,7 +2,6 @@
 
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Contracts\Pagination\Paginator;
-use Illuminate\Contracts\Support\Arrayable;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
@@ -10,8 +9,6 @@ use Illuminate\Pagination\LengthAwarePaginator as PaginatorWrapper;
 use Illuminate\Pagination\Paginator as LaravelPaginator;
 use League\Fractal\Manager;
 use League\Fractal\Pagination\IlluminatePaginatorAdapter;
-use League\Fractal\Resource\Collection as Items;
-use League\Fractal\Resource\Item;
 use League\Fractal\Serializer\ArraySerializer;
 use Znck\Transformers\ArrayableTransformer;
 use Znck\Transformers\Transformer;
@@ -27,7 +24,7 @@ trait TransformerManager
         if ($data instanceof Collection) {
             $resource = self::transformer($data)->collection($data, null, $guess ? self::guessResourceKey($data) : null);
         } elseif ($data instanceof Paginator) {
-            $resource = self::paginatedResponse($data, , $guess ? self::guessResourceKey($data) : null);
+            $resource = self::paginatedResponse($data, $guess ? self::guessResourceKey($data) : null);
         } elseif ($data instanceof Model) {
             $resource = self::transformer($data)->item($data, null, $guess ? self::guessResourceKey($data) : null);
         }
