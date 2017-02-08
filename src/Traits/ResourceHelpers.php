@@ -44,7 +44,7 @@ trait ResourceHelpers
      */
     protected function collection($items, $transformer = null, $resourceKey = null) {
         if (!$items) {
-            return $this->null();
+            $items = [];
         }
 
         $item = collect($items)->first();
