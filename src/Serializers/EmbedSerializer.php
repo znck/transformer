@@ -19,6 +19,8 @@ class EmbedSerializer extends ArraySerializer
     }
 
     public function meta(array $meta) {
-        return ['meta' => $meta];
+        if (count($meta)) return ['meta' => $meta];
+
+        return [];
     }
 }
