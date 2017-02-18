@@ -121,7 +121,7 @@ trait TransformerManager
      */
     protected static function guessResourceKey($data): string {
         if ($data instanceof Model) {
-            return strtolower(class_basename($data));
+            return strtolower(snake_case(class_basename($data)));
         }
 
         if ($data instanceof Collection) {
